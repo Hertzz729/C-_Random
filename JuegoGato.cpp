@@ -5,11 +5,15 @@ using namespace std;
 char matrizG[3][3]={'0','0','0',
                     '0','0','0',
                     '0','0','0'};
+int matizV[3][3]={1,1,1,
+                  4,5,6,
+                  3,3,3};
 
 // movimientos de cada jugador y juegos ganados
 struct JUGADOR_MV{
-    int n, cero=0, uno=0, dos=0;
-    int m, ceroM=0, unoM=0, dosM=0;
+    int n;
+    int m;
+    int valores[5]={0,0,0,0,0};
     int win=0;
     char car;
 };
@@ -34,54 +38,46 @@ bool ValidMove(struct JUGADOR_MV player){
     }
 }
 
-//función pedir coordenadas
+//función pedir coordenadas y asignar valores
 void Coord(struct JUGADOR_MV &player){ //se tiene que pasar por referencia la estructura si no no efectuara cambios
     cout<<"Digite la condenada n: "; 
     cin>>player.n;
     cout<<"Digite la condenada m: "; 
     cin>>player.m;
+    //player.valores[turno]=matizV[player.n][player.m];
 }
 
-//función añadir
-void adicion(struct JUGADOR_MV &player, int *punteroN, int *punteroM){
-    switch(*punteroN){
-        case 0:
-        player.cero+=1; break;
-        case 1:
-        player.uno+=1; break;
-        case 2:
-        player.dos+=1; break;
-    }
-    switch(*punteroM){
-        case 0:
-        player.ceroM+=1; break;
-        case 1:
-        player.unoM+=1; break;
-        case 2:
-        player.dosM+=1; break;
-    }
-}
+
 
 //función para asignar los caracteres a las coordenadas
-void AsignarMatG(struct JUGADOR_MV player){
-    int *puntN=&player.n, *puntM=&player.m;
+void AsignarMatG(struct JUGADOR_MV player, int turno){
     do{
         Coord(player);
     
     }while(ValidMove(player)!=true);
-    
-    adicion(player, puntN, puntM);//---------->MODIFICAR FUNCION
+    player.valores[turno]=matizV[player.n][player.m]; //si se asigna el valor deseado
+    //cout<<player.valores[turno];
     matrizG[player.n][player.m]=player.car;
 }
 
 
 //función verificar ganador o empate
-bool ValidWin(struct JUGADOR_MV playerX){
-    if(playerX.cero==3 || playerX.uno==3 || playerX.dos==3){
-        return true;
-    }
-    else if(playerX.ceroM==3 || playerX.unoM==3 || playerX.dosM==3){
-        return true;
+bool ValidWin(struct JUGADOR_MV &player){
+    int fijoP, fijoS, cambiante, suma=0;
+    
+    for(int i=0; i<3; i++){ //no esta pasando los valores del arreglo 
+        fijoP=player.valores[i];
+        cout<<endl<<fijoP<<endl;
+        
+        for(int j=i+1; j<4; j++){
+            fijoS=player.valores[j];
+            cambiante=player.valores[j+1];
+            suma=fijoS+fijoP+cambiante;
+            
+            if(suma==3 || suma==15 || suma==9 || suma==8 ||suma==10){
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -101,15 +97,17 @@ void imprimir(){
 }
 
 void GAME(struct JUGADOR_MV player1, struct JUGADOR_MV player2){
-    int turnInd=1;
+    int turnInd=1, turn1=0, turn2=0;
     cout<<"Jugador 1 "; AsignarChar(player1);
     cout<<"Jugador 2 "; AsignarChar(player2);
     do{
         if(turnInd%2!=0){ //si el turno individual es impar es turno del player1
             cout<<"Turno del jugador 1:"<<endl;
-            AsignarMatG(player1);
+            AsignarMatG(player1, turn1);
             turnInd+=1;
-            if(turnInd>=3){
+            turn1+=1;
+            //cout<<player1.valores[turn1];
+            if(turnInd>=5){
                 if(ValidWin(player1)==true){
                     cout<<"El jugador1 ha ganado..."<<endl<<"fin del juego";
                     break;
@@ -119,9 +117,10 @@ void GAME(struct JUGADOR_MV player1, struct JUGADOR_MV player2){
         }
         else{
             cout<<"Turno del jugador 2:"<<endl;
-            AsignarMatG(player2);
+            AsignarMatG(player2, turn2);
             turnInd+=1;
-            if(turnInd>=4){
+            turn2+=1;
+            if(turnInd>=6){
                 if(ValidWin(player2)==true){
                     cout<<"El jugador2 ha ganado"<<endl<<"fin del juego";
                     break;
@@ -134,7 +133,6 @@ void GAME(struct JUGADOR_MV player1, struct JUGADOR_MV player2){
         
     }while(turnInd<10);
     
-    cout<<"Es un empate";
 }
 
 int main(){
