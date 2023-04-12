@@ -2,149 +2,179 @@
 using namespace std;
 
 //matriz Gato
-char matrizG[3][3]={'0','0','0',
-                    '0','0','0',
-                    '0','0','0'};
-int matizV[3][3]={1,1,1,
-                  4,5,6,
-                  3,3,3};
-
-// movimientos de cada jugador y juegos ganados
-struct JUGADOR_MV{
-    int n;
-    int m;
-    int valores[5]={0,0,0,0,0};
-    int win=0;
-    char car;
+char matrizG[3][3] = {  '0', '0', '0',
+                        '0', '0', '0',
+                        '0', '0', '0'
 };
 
-//función donde el jugador escoje su caracter para jugar
-void AsignarChar(struct JUGADOR_MV &player){  //pasar la estructura como referencia para que efectue los cambios
-    do{
-        cout<<"elija un caracter del teclado excepto en '0': ";
-        cin>>player.car;
-    }while(player.car=='0');
-    cout<<player.car<<endl;
-}
+float matizV[3][3] = { 1.12, 1.24, 1.45,	//estos valores se le asignan a cada casilla que el jugador ocupe
+                       23, 19, 17,			//y existen 8 combinaciones de 3 numeros que dan un conjunto soluciC3n
+                       29, 31, 37};				//{3,8,9,10,15}
 
-//función para validar movimiento
-bool ValidMove(struct JUGADOR_MV player){
-    if(matrizG[player.n][player.m]=='0'){ //si el espacio no esta ocupado se valida
-        return true;
+float Vp1[5] = { 0, 0, 0, 0, 0 };
+float Vp2[5] = { 0, 0, 0, 0, 0 };
+
+// movimientos de cada jugador y juegos ganados
+struct JUGADOR_MV
+{
+  int n;
+  int m;
+  int win = 0;
+  char car;
+};
+
+//funciC3n donde el jugador escoje su caracter para jugar
+void
+AsignarChar (struct JUGADOR_MV &player)
+{				//pasar la estructura como referencia para que efectue los cambios
+  do
+    {
+      cout << "elija un caracter del teclado excepto en '0': ";
+      cin >> player.car;
     }
-    else{
-        cout<<"Esa posición ya esta ocupada, escoja otra "<<endl;
-        return false;
+  while (player.car == '0');
+  cout << player.car << endl;
+}
+
+//funciC3n para validar movimiento
+bool
+ValidMove (struct JUGADOR_MV player)
+{
+  if (matrizG[player.n][player.m] == '0')
+    {				//si el espacio no esta ocupado se valida
+      return true;
+    }
+  else
+    {
+      cout << "Esa posiciC3n ya esta ocupada, escoja otra " << endl;
+      return false;
     }
 }
 
-//función pedir coordenadas y asignar valores
-void Coord(struct JUGADOR_MV &player, int turno){ //se tiene que pasar por referencia la estructura si no no efectuara cambios
-    cout<<"Digite la condenada n: "; 
-    cin>>player.n;
-    cout<<"Digite la condenada m: "; 
-    cin>>player.m;
-    //player.valores[turno]=matizV[player.n][player.m]; //POR ALGUNA RAZÓN NO SE PUEDE ASIGNAR DOS COSAS DE LA ESTRUCTURA
-}                                                       //EN LA MISMA FUNCION, POR LO QUE SE OPTO POR PONER ESTA ASIGNACIÓN
-                                                        // EN LA FUNCION DE ABAJO (ARREGLAR)
-
-//función que asigna los valores de la matrizV a el arreglo valores, que sirven para verificar al ganador
-void v(struct JUGADOR_MV &player, int n, int m, int turno){
-    player.valores[turno]=matizV[n][m];
+//funciC3n pedir coordenadas y asignar valores
+void
+Coord (struct JUGADOR_MV &player, int turno)
+{				//se tiene que pasar por referencia la estructura si no no efectuara cambios
+  cout << "Digite la condenada n: ";
+  cin >> player.n;
+  cout << "Digite la condenada m: ";
+  cin >> player.m;
 }
 
 
-//función para asignar los caracteres a las coordenadas
-void AsignarMatG(struct JUGADOR_MV player, int turno){
-    do{
-        Coord(player, turno);
-    
-    }while(ValidMove(player)!=true);
-    matrizG[player.n][player.m]=player.car;
-}
-
-
-//función verificar ganador o empate
-bool ValidWin(struct JUGADOR_MV player){
-    int fijoP, fijoS, cambiante, suma=0;
-    
-    for(int i=0; i<3; i++){ //no esta pasando los valores del arreglo 
-        fijoP=player.valores[i];
-        cout<<"fijo p "<<fijoP;
-        for(int j=i+1; j<4; j++){
-            fijoS=player.valores[j];
-            cout<<" fijo s "<<fijoS;
-            cambiante=player.valores[j+1];
-            cout<<" cambiante "<<fijoP<<endl;    
-            suma=fijoS+fijoP+cambiante;
-            
-            if(suma==3 || suma==15 || suma==9 || suma==8 ||suma==10){
-                return true;
-            }
-        }
+//funciC3n para asignar los caracteres a las coordenadas
+void
+AsignarMatG (struct JUGADOR_MV player, int turno, float Valores[5])
+{
+  do
+    {
+      Coord (player, turno);
     }
-    return false;
+  while (ValidMove (player) != true);
+  Valores[turno] = matizV[player.n][player.m];
+  matrizG[player.n][player.m] = player.car;
 }
 
 
-//función imprimir matriz
-void imprimir(){
-    for(int i=0; i<3; i++){
-        for(int j=0; j<3; j++){
-            cout<<matrizG[i][j];
-            if(j<2){
-                cout<<"|";
-            }
-        }
-        cout<<endl;
-    }    
+/*funciC3n VERIFICA A GANADOR con un algoritmo que hace la suma de tres casillas que el jugador 
+haya elegido si encuentra una suma que coinsida con el conjunto soluciC3n significa que el jugador ha ganado*/
+bool ValidWin (float Valores[5]){
+  float fijoP, fijoS, cambiante, suma = 0;
+
+  for (int i = 0; i < 3; i++)
+    {
+      fijoP = Valores[i];
+
+      for (int j = i + 1; j < 4; j++)
+	{
+	  fijoS = Valores[j];
+	  cambiante = Valores[j + 1];
+	  suma = fijoS + fijoP + cambiante;
+	  /*EncontrC) que el conjunto {3,8,9,10,15} es el soluciC3n, y se obtiene al sumar una combinacion de 3 numeros
+	     los cuales se obtienen del arreglo player.valores
+	   */
+	  cout << " Suma " << suma << endl;
+	  if (suma == 53.12 || suma == 51.24 || suma == 55.45 || suma == 49.45
+	      || suma || 3.81 || suma == 59 || suma == 97 || suma == 57)
+	    {
+	      return true;
+	    }
+	}
+    }
+  return false;
 }
 
-void GAME(struct JUGADOR_MV player1, struct JUGADOR_MV player2){
-    int turnInd=1, turn1=0, turn2=0;
-    cout<<"Jugador 1 "; AsignarChar(player1);
-    cout<<"Jugador 2 "; AsignarChar(player2);
-    do{
-        if(turnInd%2!=0){ //si el turno individual es impar es turno del player1
-            cout<<"Turno del jugador 1:"<<endl;
-            AsignarMatG(player1, turn1);
-            v(player1, player1.n, player1.m, turn1);
-            cout<<" valores "<<player1.valores[turn1]<<endl; //EN ESTA PARTE PARECE QUE NO TOMA LAS VARIABLES DE VALORES
-            turnInd+=1;
-            turn1+=1;
-            if(turnInd>=5){
-                if(ValidWin(player1)==true){
-                    imprimir();
-                    cout<<"El jugador1 ha ganado..."<<endl<<"fin del juego";
-                    break;
-                }
-                
-            }
-        }
-        else{
-            cout<<"Turno del jugador 2:"<<endl;
-            AsignarMatG(player2, turn2);
-            v(player1, player1.n, player1.m, turn1);
-            turnInd+=1;
-            turn2+=1;
-            if(turnInd>=6){
-                if(ValidWin(player2)==true){
-                    imprimir();
-                    cout<<"El jugador2 ha ganado"<<endl<<"fin del juego";
-                    break;
-                }
-                
-            }
-           
-        }
-        imprimir();
-        
-    }while(turnInd<10);
-    
+
+//funciC3n imprimir matriz
+void
+imprimir ()
+{
+  for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
+	{
+	  cout << matrizG[i][j];
+	  if (j < 2)
+	    {
+	      cout << "|";
+	    }
+	}
+      cout << endl;
+    }
 }
 
-int main(){
-    JUGADOR_MV jugador1, jugador2;
-    GAME(jugador1, jugador2);
-    return 0;
+void
+GAME (struct JUGADOR_MV player1, struct JUGADOR_MV player2){
+  int turnInd = 1, turn1 = 0, turn2 = 0;
+  cout << "Jugador 1 ";
+  AsignarChar (player1);
+  cout << "Jugador 2 ";
+  AsignarChar (player2);
+  do{
+      if (turnInd % 2 != 0){			//si el turno individual es impar es turno del player1
+	  cout << "Turno del jugador 1:" << endl;
+	  AsignarMatG (player1, turn1, Vp1);
+	  turnInd += 1;
+	  turn1 += 1;
+	  if (turnInd >= 5){
+	      if (ValidWin (Vp1) == true)
+		{
+		  imprimir ();
+		  cout << "El jugador1 ha ganado..." << endl <<
+		    "fin del juego";
+		  break;
+		}
+
+	    }
+	}
+      else{
+	  cout << "Turno del jugador 2:" << endl;
+	  AsignarMatG (player2, turn2, Vp2);
+	  turnInd += 1;
+	  turn2 += 1;
+	  if (turnInd >= 6)
+	    {
+	      if (ValidWin (Vp2) == true)
+		{
+		  imprimir ();
+		  cout << "El jugador2 ha ganado" << endl << "fin del juego";
+		  break;
+		}
+
+	    }
+
+	}
+      imprimir ();
+
+    }
+  while (turnInd < 10);
+
+}
+
+int
+main ()
+{
+  JUGADOR_MV jugador1, jugador2;
+  GAME (jugador1, jugador2);
+  return 0;
 }
