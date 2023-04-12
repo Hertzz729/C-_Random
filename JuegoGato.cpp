@@ -39,39 +39,43 @@ bool ValidMove(struct JUGADOR_MV player){
 }
 
 //función pedir coordenadas y asignar valores
-void Coord(struct JUGADOR_MV &player){ //se tiene que pasar por referencia la estructura si no no efectuara cambios
+void Coord(struct JUGADOR_MV &player, int turno){ //se tiene que pasar por referencia la estructura si no no efectuara cambios
     cout<<"Digite la condenada n: "; 
     cin>>player.n;
     cout<<"Digite la condenada m: "; 
     cin>>player.m;
-    //player.valores[turno]=matizV[player.n][player.m];
-}
+    //player.valores[turno]=matizV[player.n][player.m]; //POR ALGUNA RAZÓN NO SE PUEDE ASIGNAR DOS COSAS DE LA ESTRUCTURA
+}                                                       //EN LA MISMA FUNCION, POR LO QUE SE OPTO POR PONER ESTA ASIGNACIÓN
+                                                        // EN LA FUNCION DE ABAJO (ARREGLAR)
 
+//función que asigna los valores de la matrizV a el arreglo valores, que sirven para verificar al ganador
+void v(struct JUGADOR_MV &player, int n, int m, int turno){
+    player.valores[turno]=matizV[n][m];
+}
 
 
 //función para asignar los caracteres a las coordenadas
 void AsignarMatG(struct JUGADOR_MV player, int turno){
     do{
-        Coord(player);
+        Coord(player, turno);
     
     }while(ValidMove(player)!=true);
-    player.valores[turno]=matizV[player.n][player.m]; //si se asigna el valor deseado
-    //cout<<player.valores[turno];
     matrizG[player.n][player.m]=player.car;
 }
 
 
 //función verificar ganador o empate
-bool ValidWin(struct JUGADOR_MV &player){
+bool ValidWin(struct JUGADOR_MV player){
     int fijoP, fijoS, cambiante, suma=0;
     
     for(int i=0; i<3; i++){ //no esta pasando los valores del arreglo 
         fijoP=player.valores[i];
-        cout<<endl<<fijoP<<endl;
-        
+        cout<<"fijo p "<<fijoP;
         for(int j=i+1; j<4; j++){
             fijoS=player.valores[j];
+            cout<<" fijo s "<<fijoS;
             cambiante=player.valores[j+1];
+            cout<<" cambiante "<<fijoP<<endl;    
             suma=fijoS+fijoP+cambiante;
             
             if(suma==3 || suma==15 || suma==9 || suma==8 ||suma==10){
@@ -104,11 +108,13 @@ void GAME(struct JUGADOR_MV player1, struct JUGADOR_MV player2){
         if(turnInd%2!=0){ //si el turno individual es impar es turno del player1
             cout<<"Turno del jugador 1:"<<endl;
             AsignarMatG(player1, turn1);
+            v(player1, player1.n, player1.m, turn1);
+            cout<<" valores "<<player1.valores[turn1]<<endl; //EN ESTA PARTE PARECE QUE NO TOMA LAS VARIABLES DE VALORES
             turnInd+=1;
             turn1+=1;
-            //cout<<player1.valores[turn1];
             if(turnInd>=5){
                 if(ValidWin(player1)==true){
+                    imprimir();
                     cout<<"El jugador1 ha ganado..."<<endl<<"fin del juego";
                     break;
                 }
@@ -118,10 +124,12 @@ void GAME(struct JUGADOR_MV player1, struct JUGADOR_MV player2){
         else{
             cout<<"Turno del jugador 2:"<<endl;
             AsignarMatG(player2, turn2);
+            v(player1, player1.n, player1.m, turn1);
             turnInd+=1;
             turn2+=1;
             if(turnInd>=6){
                 if(ValidWin(player2)==true){
+                    imprimir();
                     cout<<"El jugador2 ha ganado"<<endl<<"fin del juego";
                     break;
                 }
