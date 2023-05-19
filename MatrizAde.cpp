@@ -25,12 +25,12 @@ int** crearMat(int tam){
 int** multiplicarMat(int** mat1, int**mat2, int tam){
     int aux[tam];
     int** MatrizAdP=crearMat(tam);
-    int elemeto, suma;
+    int elemeto=0, suma=0;
     for (int i=0;i<tam; i++ ){// se mantiene la fila y cambian las columnas
             for(int n=0; n<tam; n++){  // se mantienen las columnas y cambian las filassu
                 for(int m=0; m<tam; m++){
                     elemeto=*(*(mat1+i)+m)*(*(*(mat2+m)+n));
-                    cout<<"subindices"<<"i="<<i<<" m="<<m<<" m="<<m<<" n="<<n<<endl;
+                    cout<<"subindices"<<"i="<<i+1<<" m="<<m+1<<" m="<<m+1<<" n="<<n+1<<endl;
                     cout<<elemeto<<endl;
                     aux[m]=elemeto;
                 }
@@ -38,7 +38,7 @@ int** multiplicarMat(int** mat1, int**mat2, int tam){
                     suma+=aux[r];
                 }
                 (*(*(MatrizAdP+i)+n))=suma;
-            //cout<<"el nuevo elemeto es: "<<suma<<endl;
+            cout<<"el nuevo elemeto es: "<<suma<<endl;
             suma=0;
             }
  
@@ -95,37 +95,6 @@ int main()
     //imprimirM(m,2);
     cout<<"Terminan pruebas de las funciones"<<endl;
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    //prueba puntero doble
-    int p=0;
-    //en esta parte creamos el espacio de la matriz dimamica
-    int **matriz = new int*[2];// se crea el espacio de dos filas
-    for (int j=0; j<2; j++){
-        matriz[j] = new int[2]; // a cada fila se le pone una columan
-    }
-    
-    //aqui rellenamos la matriz
-    for (int k=0; k<2; k++){
-        for(int n=0; n<2; n++){
-            p+=1;
-            *(*(matriz+k)+n)=p;
-        }
-    }
-    
-    //aqui imprimimos la matriz
-    for (int k=0; k<2; k++){
-        for(int n=0; n<2; n++){
-            cout<<*(*(matriz+k)+n);
-        }
-        cout<<endl;
-    }
-    
-    //eliminar el espacio de la matriz 
-    //eliminamos las columnas 
-    for (int j=0; j<2; j++){
-        delete[] matriz[j];
-    }
-    delete[] matriz; //eliminamos las filas 
-    matriz = NULL; // hacemos que el apuntador deje de apuntar a algo
-    
+
     return 0;
 }
